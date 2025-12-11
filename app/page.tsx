@@ -79,13 +79,14 @@ export default function Home() {
         }`}
       >
         <div className="container mx-auto px-6 flex justify-between items-center">
-          <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="w-10 h-10 bg-gradient-to-br from-gold-primary to-gold-secondary rounded-lg flex items-center justify-center shadow-lg shadow-yellow-500/20 group-hover:shadow-yellow-500/40 transition-all">
-              <Music className="w-6 h-6 text-black" />
-            </div>
-            <span className="font-montserrat font-black text-xl tracking-widest uppercase">
-              Cidade da <span className="text-gold-primary">Música</span>
-            </span>
+          <div className="flex items-center group cursor-pointer">
+            <Image 
+              src="/logo.png" 
+              alt="Cidade da Música" 
+              width={180} 
+              height={60} 
+              className="h-12 w-auto object-contain"
+            />
           </div>
 
           {/* Desktop Menu */}
@@ -377,11 +378,14 @@ export default function Home() {
           </div>
 
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Music className="w-5 h-5 text-gold-primary" />
-              <span className="font-montserrat font-bold text-lg tracking-widest uppercase">
-                Cidade da <span className="text-gold-primary">Música</span>
-              </span>
+            <div className="flex items-center">
+              <Image 
+                src="/logo.png" 
+                alt="Cidade da Música" 
+                width={150} 
+                height={50} 
+                className="h-10 w-auto object-contain"
+              />
             </div>
             <p className="font-inter text-xs text-gray-600 uppercase tracking-wider">
               © 2024 Cidade da Música. Todos os direitos reservados.
