@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { 
   Menu, 
@@ -24,7 +24,7 @@ const events = [
     title: "Neon Jungle 2025", 
     date: "15 AGO", 
     location: "São Paulo, SP", 
-    img: "https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?q=80&w=800&auto=format&fit=crop" 
+    img: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=800&auto=format&fit=crop" 
   },
   { 
     title: "Tech-No Summit", 
@@ -46,20 +46,123 @@ const events = [
   },
 ]
 
-// Dados das estatísticas
-const stats = [
-  { label: 'Público Total', value: '2.5M+' },
-  { label: 'Eventos Realizados', value: '500+' },
-  { label: 'Artistas Agenciados', value: '45' },
-  { label: 'Países', value: '08' },
-]
+
 
 // Menu items
 const menuItems = ['A Agência', 'Festivais', 'Gestão', 'Projetos', 'Contato']
 
+// Logos das marcas parceiras
+const brandLogos = [
+  '/img/marcas/image.png',
+  '/img/marcas/image (1).png',
+  '/img/marcas/image (2).png',
+  '/img/marcas/image (3).png',
+  '/img/marcas/image (4).png',
+  '/img/marcas/image (5).png',
+  '/img/marcas/image (7).png',
+  '/img/marcas/image (8).png',
+  '/img/marcas/image (9).png',
+  '/img/marcas/image (10).png',
+  '/img/marcas/image (11).png',
+  '/img/marcas/image (12).png',
+  '/img/marcas/image (13).png',
+  '/img/marcas/image (14).png',
+  '/img/marcas/image (15).png',
+]
+
 export default function Home() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+  // Refs para o carrossel de marcas (usando refs para valores síncronos)
+  const carouselRef = useRef<HTMLDivElement>(null)
+  const isDraggingRef = useRef(false)
+  const startXRef = useRef(0)
+  const scrollLeftRef = useRef(0)
+  const [isDragging, setIsDragging] = useState(false) // apenas para UI
+
+  // Refs para o carrossel de eventos
+  const eventsCarouselRef = useRef<HTMLDivElement>(null)
+  const isEventsDraggingRef = useRef(false)
+  const eventsStartXRef = useRef(0)
+  const eventsScrollLeftRef = useRef(0)
+  const [isEventsDragging, setIsEventsDragging] = useState(false) // apenas para UI
+
+  // Handlers do carrossel de marcas
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!carouselRef.current) return
+    isDraggingRef.current = true
+    setIsDragging(true)
+    startXRef.current = e.pageX - carouselRef.current.offsetLeft
+    scrollLeftRef.current = carouselRef.current.scrollLeft
+  }
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false
+    setIsDragging(false)
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingRef.current || !carouselRef.current) return
+    e.preventDefault()
+    const x = e.pageX - carouselRef.current.offsetLeft
+    const walk = (x - startXRef.current) * 2
+    carouselRef.current.scrollLeft = scrollLeftRef.current - walk
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!carouselRef.current) return
+    isDraggingRef.current = true
+    setIsDragging(true)
+    startXRef.current = e.touches[0].pageX - carouselRef.current.offsetLeft
+    scrollLeftRef.current = carouselRef.current.scrollLeft
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDraggingRef.current || !carouselRef.current) return
+    e.preventDefault()
+    const x = e.touches[0].pageX - carouselRef.current.offsetLeft
+    const walk = (x - startXRef.current) * 2
+    carouselRef.current.scrollLeft = scrollLeftRef.current - walk
+  }
+
+  // Handlers do carrossel de eventos
+  const handleEventsMouseDown = (e: React.MouseEvent) => {
+    if (!eventsCarouselRef.current) return
+    isEventsDraggingRef.current = true
+    setIsEventsDragging(true)
+    eventsStartXRef.current = e.pageX - eventsCarouselRef.current.offsetLeft
+    eventsScrollLeftRef.current = eventsCarouselRef.current.scrollLeft
+  }
+
+  const handleEventsMouseUp = () => {
+    isEventsDraggingRef.current = false
+    setIsEventsDragging(false)
+  }
+
+  const handleEventsMouseMove = (e: React.MouseEvent) => {
+    if (!isEventsDraggingRef.current || !eventsCarouselRef.current) return
+    e.preventDefault()
+    const x = e.pageX - eventsCarouselRef.current.offsetLeft
+    const walk = (x - eventsStartXRef.current) * 2
+    eventsCarouselRef.current.scrollLeft = eventsScrollLeftRef.current - walk
+  }
+
+  const handleEventsTouchStart = (e: React.TouchEvent) => {
+    if (!eventsCarouselRef.current) return
+    isEventsDraggingRef.current = true
+    setIsEventsDragging(true)
+    eventsStartXRef.current = e.touches[0].pageX - eventsCarouselRef.current.offsetLeft
+    eventsScrollLeftRef.current = eventsCarouselRef.current.scrollLeft
+  }
+
+  const handleEventsTouchMove = (e: React.TouchEvent) => {
+    if (!isEventsDraggingRef.current || !eventsCarouselRef.current) return
+    e.preventDefault()
+    const x = e.touches[0].pageX - eventsCarouselRef.current.offsetLeft
+    const walk = (x - eventsStartXRef.current) * 2
+    eventsCarouselRef.current.scrollLeft = eventsScrollLeftRef.current - walk
+  }
 
   // Efeito de scroll para a navbar
   useEffect(() => {
@@ -68,6 +171,37 @@ export default function Home() {
     }
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Auto-scroll do carrossel de marcas (usando scrollLeft para consistência com drag)
+  useEffect(() => {
+    const carousel = carouselRef.current
+    if (!carousel) return
+
+    let animationId: number
+    let lastTime = 0
+    const speed = 0.5 // pixels por frame
+
+    const animate = (currentTime: number) => {
+      if (!isDraggingRef.current && carousel) {
+        if (lastTime !== 0) {
+          const delta = currentTime - lastTime
+          carousel.scrollLeft += speed * (delta / 16) // normalizado para ~60fps
+          
+          // Reset quando chegar na metade (loop infinito)
+          if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
+            carousel.scrollLeft = 0
+          }
+        }
+        lastTime = currentTime
+      } else {
+        lastTime = 0
+      }
+      animationId = requestAnimationFrame(animate)
+    }
+
+    animationId = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animationId)
   }, [])
 
   return (
@@ -81,7 +215,7 @@ export default function Home() {
         <div className="container mx-auto px-6 flex justify-between items-center">
           <div className="flex items-center group cursor-pointer">
             <Image 
-              src="/logo.png" 
+              src="/img/logo.png" 
               alt="Cidade da Música" 
               width={180} 
               height={60} 
@@ -128,6 +262,9 @@ export default function Home() {
                 {item.toUpperCase()}
               </a>
             ))}
+            <button className="mt-2 px-6 py-3 bg-white text-dark-navy font-montserrat font-bold text-sm tracking-widest uppercase hover:bg-gold-primary hover:text-black transition-all rounded-sm">
+              Fale Conosco
+            </button>
           </div>
         )}
       </header>
@@ -149,9 +286,6 @@ export default function Home() {
 
         <div className="container mx-auto px-6 relative z-10 pt-20">
           <div className="max-w-4xl">
-            <h2 className="font-inter font-bold text-gold-primary tracking-[0.2em] mb-4 text-sm animate-fade-in-up">
-              EST. 2010 — WORLDWIDE PRODUCTION
-            </h2>
             <h1 className="font-montserrat font-black text-5xl md:text-7xl lg:text-8xl leading-tight uppercase mb-6 drop-shadow-2xl">
               Criando <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-400">Experiências</span> <br />
@@ -164,9 +298,6 @@ export default function Home() {
               <button className="px-8 py-4 bg-gradient-to-r from-gold-primary to-gold-secondary text-black font-montserrat font-bold tracking-widest uppercase text-sm hover:from-gold-secondary hover:to-gold-dark transition-all shadow-[0_0_20px_rgba(250,204,21,0.3)] hover:shadow-[0_0_30px_rgba(250,204,21,0.5)] flex items-center justify-center gap-2 rounded-sm">
                 Ver Projetos <ArrowRight className="w-4 h-4" />
               </button>
-              <button className="px-8 py-4 bg-transparent border border-white/20 hover:bg-white/5 font-montserrat font-bold tracking-widest uppercase text-sm transition-all backdrop-blur-sm flex items-center justify-center rounded-sm hover:border-gold-primary hover:text-gold-primary">
-                Showreel 2024
-              </button>
             </div>
           </div>
         </div>
@@ -177,22 +308,6 @@ export default function Home() {
           <div className="w-[1px] h-12 bg-gradient-to-b from-gold-primary to-transparent"></div>
         </div>
       </section>
-
-      {/* Stats Bar */}
-      <div className="bg-dark-navy-secondary border-y border-white/5 py-12 relative overflow-hidden">
-        <div className="container mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((stat, idx) => (
-            <div key={idx} className="text-center group">
-              <h3 className="font-montserrat font-black text-3xl md:text-5xl text-white mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-gold-primary transition-all duration-300">
-                {stat.value}
-              </h3>
-              <p className="font-inter text-xs md:text-sm text-gray-400 uppercase tracking-widest font-semibold">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Modular Services Section */}
       <section className="py-24 bg-dark-navy relative">
@@ -211,9 +326,9 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             {/* Card 1: Gestão */}
-            <div className="group relative p-8 bg-[#222632] border border-white/5 hover:border-gold-primary/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden rounded-sm">
+            <div className="group relative p-8 bg-[#222632] border border-white/5 hover:border-gold-primary/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden rounded-sm flex flex-col">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Users className="w-24 h-24 text-gold-primary" />
               </div>
@@ -221,42 +336,44 @@ export default function Home() {
                 <Mic2 className="w-6 h-6 text-gold-primary group-hover:text-black" />
               </div>
               <h3 className="font-montserrat font-bold text-2xl uppercase mb-4 text-white">Gestão & Booking</h3>
-              <p className="font-inter text-gray-400 mb-6 leading-relaxed text-sm">
+              <p className="font-inter text-gray-400 mb-6 leading-relaxed text-sm flex-grow">
                 Representação de artistas de elite e curadoria estratégica de line-ups para garantir o sucesso comercial e artístico do seu evento.
               </p>
-              <a href="#" className="inline-flex items-center text-gold-primary font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
+              <a href="#" className="inline-flex items-center text-gold-primary font-bold text-xs uppercase tracking-widest hover:text-white transition-colors mt-auto">
                 Saiba Mais <ArrowRight className="w-4 h-4 ml-2" />
               </a>
             </div>
 
-            {/* Card 2: Festivais (Highlight) */}
-            <div className="group relative p-8 bg-[#2A2F3E] border border-gold-primary/30 hover:border-gold-secondary transition-all duration-500 transform md:-translate-y-4 shadow-2xl shadow-yellow-900/20 rounded-sm">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gold-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {/* Card 2: Festivais */}
+            <div className="group relative p-8 bg-[#222632] border border-white/5 hover:border-gold-primary/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden rounded-sm flex flex-col">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Music className="w-24 h-24 text-gold-primary" />
+              </div>
               <div className="w-12 h-12 bg-gold-primary/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold-primary transition-colors duration-300">
                 <Music className="w-6 h-6 text-gold-primary group-hover:text-black" />
               </div>
               <h3 className="font-montserrat font-bold text-2xl uppercase mb-4 text-white">Produção de Festivais</h3>
-              <p className="font-inter text-gray-300 mb-6 leading-relaxed text-sm">
+              <p className="font-inter text-gray-400 mb-6 leading-relaxed text-sm flex-grow">
                 Do conceito à execução. Palcos gigantescos, iluminação imersiva e logística impecável para multidões de mais de 100 mil pessoas.
               </p>
-              <a href="#" className="inline-flex items-center text-gold-primary font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
+              <a href="#" className="inline-flex items-center text-gold-primary font-bold text-xs uppercase tracking-widest hover:text-white transition-colors mt-auto">
                 Ver Portfolio <ArrowRight className="w-4 h-4 ml-2" />
               </a>
             </div>
 
             {/* Card 3: Projetos Especiais */}
-            <div className="group relative p-8 bg-[#222632] border border-white/5 hover:border-gold-secondary/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden rounded-sm">
+            <div className="group relative p-8 bg-[#222632] border border-white/5 hover:border-gold-primary/50 transition-all duration-500 hover:-translate-y-2 overflow-hidden rounded-sm flex flex-col">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Star className="w-24 h-24 text-gold-secondary" />
+                <Star className="w-24 h-24 text-gold-primary" />
               </div>
-              <div className="w-12 h-12 bg-gold-secondary/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold-secondary transition-colors duration-300">
-                <Calendar className="w-6 h-6 text-gold-secondary group-hover:text-black" />
+              <div className="w-12 h-12 bg-gold-primary/20 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold-primary transition-colors duration-300">
+                <Calendar className="w-6 h-6 text-gold-primary group-hover:text-black" />
               </div>
               <h3 className="font-montserrat font-bold text-2xl uppercase mb-4 text-white">Projetos Especiais</h3>
-              <p className="font-inter text-gray-400 mb-6 leading-relaxed text-sm">
+              <p className="font-inter text-gray-400 mb-6 leading-relaxed text-sm flex-grow">
                 Eventos corporativos de alto nível, lançamentos de marcas e experiências VIP personalizadas com o selo de qualidade Cidade da Música.
               </p>
-              <a href="#" className="inline-flex items-center text-gold-secondary font-bold text-xs uppercase tracking-widest hover:text-white transition-colors">
+              <a href="#" className="inline-flex items-center text-gold-primary font-bold text-xs uppercase tracking-widest hover:text-white transition-colors mt-auto">
                 Explorar <ArrowRight className="w-4 h-4 ml-2" />
               </a>
             </div>
@@ -266,12 +383,9 @@ export default function Home() {
 
       {/* Featured Events (Parallax-ish) */}
       <section className="py-24 bg-dark-navy-secondary border-t border-white/5">
-        <div className="container mx-auto px-6 mb-12">
-          <h2 className="font-montserrat font-black text-4xl md:text-6xl uppercase text-white/5 absolute left-0 right-0 text-center -mt-20 pointer-events-none select-none">
-            Highlights
-          </h2>
-          <div className="flex justify-between items-center relative z-10">
-            <h2 className="font-montserrat font-black text-3xl uppercase text-white">
+        <div className="container mx-auto px-6 mb-8 md:mb-12">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
+            <h2 className="font-montserrat font-black text-3xl sm:text-4xl md:text-5xl uppercase text-white">
               Próximos <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-primary to-gold-secondary">Eventos</span>
             </h2>
             <button className="hidden md:flex items-center text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors">
@@ -281,7 +395,17 @@ export default function Home() {
         </div>
 
         {/* Horizontal Scroll Area */}
-        <div className="w-full overflow-x-auto pb-8 hide-scrollbar">
+        <div 
+          ref={eventsCarouselRef}
+          className={`w-full overflow-x-auto pb-8 hide-scrollbar cursor-grab ${isEventsDragging ? 'cursor-grabbing select-none' : ''}`}
+          onMouseDown={handleEventsMouseDown}
+          onMouseUp={handleEventsMouseUp}
+          onMouseLeave={handleEventsMouseUp}
+          onMouseMove={handleEventsMouseMove}
+          onTouchStart={handleEventsTouchStart}
+          onTouchEnd={handleEventsMouseUp}
+          onTouchMove={handleEventsTouchMove}
+        >
           <div className="flex px-6 gap-6 w-max">
             {events.map((event, i) => (
               <div key={i} className="relative w-[300px] md:w-[400px] h-[500px] group cursor-pointer overflow-hidden rounded-sm">
@@ -298,12 +422,12 @@ export default function Home() {
                   <span className="block font-inter text-xs text-center text-gray-300 uppercase">{event.date.split(' ')[1]}</span>
                 </div>
 
-                <div className="absolute bottom-0 left-0 p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                <div className="absolute bottom-0 left-0 p-6 md:p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                   <div className="flex items-center gap-2 text-gold-primary mb-2 opacity-0 group-hover:opacity-100 transition-opacity delay-100">
                     <MapPin className="w-4 h-4" />
                     <span className="text-xs font-bold uppercase tracking-wider">{event.location}</span>
                   </div>
-                  <h3 className="font-montserrat font-black text-3xl uppercase text-white leading-none mb-2">
+                  <h3 className="font-montserrat font-black text-2xl md:text-3xl uppercase text-white leading-none mb-2">
                     {event.title}
                   </h3>
                   <div className="h-1 w-0 bg-gradient-to-r from-gold-primary to-gold-secondary group-hover:w-full transition-all duration-500"></div>
@@ -315,28 +439,50 @@ export default function Home() {
       </section>
 
       {/* Brands / Partners Section */}
-      <section className="py-16 bg-dark-navy border-t border-white/5">
-        <div className="container mx-auto px-6 text-center">
-          <p className="font-inter text-sm text-gray-500 uppercase tracking-[0.3em] mb-10">Marcas que confiam na Cidade da Música</p>
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30">
-            <div className="h-8 md:h-12 w-32 bg-white/20 rounded"></div>
-            <div className="h-8 md:h-12 w-32 bg-white/20 rounded"></div>
-            <div className="h-8 md:h-12 w-32 bg-white/20 rounded"></div>
-            <div className="h-8 md:h-12 w-32 bg-white/20 rounded"></div>
-            <div className="h-8 md:h-12 w-32 bg-white/20 rounded"></div>
+      <section className="py-12 md:py-16 bg-dark-navy border-t border-white/5 overflow-hidden">
+        <div className="container mx-auto px-6 text-center mb-8 md:mb-10">
+          <p className="font-inter text-xs sm:text-sm text-gray-500 uppercase tracking-[0.2em] sm:tracking-[0.3em]">Marcas que confiam na Cidade da Música</p>
+        </div>
+        <div 
+          ref={carouselRef}
+          className={`relative w-full overflow-x-auto hide-scrollbar cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleMouseUp}
+          onTouchMove={handleTouchMove}
+        >
+          <div className="flex gap-8 w-max px-6">
+            {[...brandLogos, ...brandLogos].map((logo, idx) => (
+              <div 
+                key={idx} 
+                className="flex-shrink-0 h-20 w-44 rounded-lg overflow-hidden grayscale hover:grayscale-0 transition-all duration-300 select-none"
+              >
+                <Image 
+                  src={logo} 
+                  alt={`Marca parceira ${idx + 1}`} 
+                  width={176} 
+                  height={80} 
+                  className="w-full h-full object-cover pointer-events-none"
+                  draggable={false}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA / Footer */}
-      <footer className="bg-dark-navy-secondary pt-24 pb-12 border-t border-white/10 relative overflow-hidden">
+      <footer className="bg-dark-navy-secondary pt-16 md:pt-24 pb-12 border-t border-white/10 relative overflow-hidden">
         {/* Glow Effect Amarelo */}
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[800px] h-[400px] bg-gold-primary/10 blur-[150px] pointer-events-none"></div>
 
         <div className="container mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 mb-12 md:mb-20">
             <div>
-              <h2 className="font-montserrat font-black text-4xl md:text-5xl uppercase mb-6">
+              <h2 className="font-montserrat font-black text-3xl sm:text-4xl md:text-5xl uppercase mb-6">
                 Vamos criar algo <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-primary to-gold-secondary">Extraordinário?</span>
               </h2>
@@ -355,8 +501,8 @@ export default function Home() {
                   Av. Paulista, 1000 - Cobertura<br />
                   São Paulo, SP - Brasil
                 </p>
-                <a href="mailto:contato@cidademusica.com" className="flex items-center gap-2 text-gold-primary font-bold text-sm hover:text-white transition-colors">
-                  <Mail className="w-4 h-4" /> contato@cidademusica.com
+                <a href="mailto:contato@cidadedamusica.com.br" className="flex items-center gap-2 text-gold-primary font-bold text-sm hover:text-white transition-colors">
+                  <Mail className="w-4 h-4" /> contato@cidadedamusica.com.br
                 </a>
               </div>
               
@@ -380,7 +526,7 @@ export default function Home() {
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center">
               <Image 
-                src="/logo.png" 
+                src="/img/logo.png" 
                 alt="Cidade da Música" 
                 width={150} 
                 height={50} 
