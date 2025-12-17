@@ -186,7 +186,9 @@ export default function Home() {
       if (!isDraggingRef.current && carousel) {
         if (lastTime !== 0) {
           const delta = currentTime - lastTime
-          carousel.scrollLeft += speed * (delta / 16) // normalizado para ~60fps
+          // Cap delta para evitar saltos grandes quando a aba retoma do background
+          const cappedDelta = Math.min(delta, 100)
+          carousel.scrollLeft += speed * (cappedDelta / 16) // normalizado para ~60fps
           
           // Reset quando chegar na metade (loop infinito)
           if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
@@ -219,7 +221,7 @@ export default function Home() {
               alt="Cidade da Música" 
               width={180} 
               height={60} 
-              className="h-12 w-auto object-contain"
+              className="h-15 w-auto object-contain"
             />
           </div>
 
