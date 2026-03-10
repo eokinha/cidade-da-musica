@@ -1,0 +1,17 @@
+export const brandLogos: string[] = [
+  '/img/marcas/image.png',
+  '/img/marcas/image (1).png',
+  '/img/marcas/image (2).png',
+  '/img/marcas/image (3).png',
+  '/img/marcas/image (4).png',
+  '/img/marcas/image (5).png',
+  '/img/marcas/image (7).png',
+  '/img/marcas/image (8).png',
+  '/img/marcas/image (9).png',
+  '/img/marcas/image (10).png',
+  '/img/marcas/image (11).png',
+  '/img/marcas/image (12).png',
+  '/img/marcas/image (13).png',
+  '/img/marcas/image (14).png',
+  '/img/marcas/image (15).png',
+]
